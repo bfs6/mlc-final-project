@@ -436,7 +436,7 @@ first_model_results <-
     pch = 21) +
   labs(size = "Risk of Heat-Related Illness",
        alpha = "Risk of Heat-Related Illness") +
-  scale_fill_manual(values = c("red", "yellow")) +
+  scale_fill_manual(values = c("red", "green")) +
   theme_void() +
   theme(plot.title.position = 'plot', 
         plot.title = element_text(hjust = 0.5)) +
@@ -445,7 +445,7 @@ first_model_results <-
 # save plot
 ggsave("plots/nyc_tract_plot.png", plot = nyc_tract_plot)
 ggsave("plots/sensor_locations_map.png", plot = sensor_locations_map)
-
+ggsave("plots/model1_plot.png", plot = first_model_results)
 
 
 
