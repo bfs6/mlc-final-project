@@ -299,6 +299,10 @@ abhi_dat <-
            type %>% 
            str_replace_all("y_", ""))
   
+sensor_locations <- 
+  hyper_temp_sensors_total %>% 
+  dplyr::select(longitude, latitude) %>% 
+  distinct()
 
 
 ##Map
@@ -316,6 +320,12 @@ cooling_stations_sf <-
 
 abhi_dat_sf <- 
   abhi_dat %>% 
+  st_as_sf(coords = c("longitude", "latitude"),
+           crs = 4326) %>% 
+  st_transform(crs = 2263)
+
+sensor_locations_sf <- 
+  sensor_locations %>% 
   st_as_sf(coords = c("longitude", "latitude"),
            crs = 4326) %>% 
   st_transform(crs = 2263)
@@ -361,6 +371,44 @@ nyc_tract_plot <-
         plot.title = element_text(hjust = 0.5)) +
   theme(panel.grid = element_line(color = "transparent"))
 
+sensor_locations_map <- 
+  ggplot() +
+  geom_sf(
+    data = nyc_tract,
+    color = "white",
+    lwd = 0.2,
+    aes(fill = borough_name),
+    alpha = 0.8) +
+  geom_sf(
+    data = sensor_locations_sf,
+    aes(color = "Hyperlocal Temperature Sensors"),
+    alpha = 0.8,
+    show.legend = "point",
+    pch = 21,
+    color = "white",
+    fill = "red") +
+  scale_fill_manual(values = c("lightblue", "deepskyblue4",
+                               muted("blue"),
+                               muted("purple"), "darkblue"),
+                    guide = guide_legend(override.aes = list(
+                      linetype = "blank",
+                      shape = NA
+                    ))) +
+  scale_color_manual(values = c("Hyperlocal Temperature Sensors" = "white"),
+                     guide = guide_legend(
+                       override.aes = list(
+                         pch = 21,
+                         color = "white",
+                         fill = "darkgreen",
+                         linetype = "blank"))) +
+  labs(fill = "Borough", 
+       title = "NYC Hyperlocal Temperature Sensors by Borough") +
+  theme_void() +
+  theme(plot.title.position = 'plot', 
+        plot.title = element_text(hjust = 0.5)) +
+  theme(panel.grid = element_line(color = "transparent"))
+
+
 first_model_results <- 
   ggplot() +
   geom_sf(
@@ -396,7 +444,7 @@ first_model_results <-
 
 # save plot
 ggsave("plots/nyc_tract_plot.png", plot = nyc_tract_plot)
-
+ggsave("plots/sensor_locations_map.png", plot = sensor_locations_map)
 
 
 
